@@ -123,36 +123,20 @@ export const Base = () => {
 
   const KEYWORD_BUTTONS: KeywordButton[] = [
     {
-      text: t(
-        'How to write Amazon product titles for wireless earphones with ANC and 40h battery life?'
-      ),
-      query: t(
-        'How to write Amazon product titles for wireless earphones with ANC and 40h battery life?'
-      ),
+      text: '帮我写一份请假条',
+      query: '帮我写一份请假条',
     },
     {
-      text: t(
-        'Generate a professional email template to handle customer complaints about product quality'
-      ),
-      query: t(
-        'Generate a professional email template to handle customer complaints about product quality'
-      ),
+      text: '帮我生成一份购物清单',
+      query: '帮我生成一份购物清单',
     },
     {
-      text: t(
-        'Help optimize Python code for quick sort algorithm with time complexity analysis'
-      ),
-      query: t(
-        'Help optimize Python code for quick sort algorithm with time complexity analysis'
-      ),
+      text: '今天北京天气怎么样',
+      query: '今天北京天气怎么样',
     },
     {
-      text: t(
-        'Create a comparison table of marketing strategies between TikTok and Instagram Reels'
-      ),
-      query: t(
-        'Create a comparison table of marketing strategies between TikTok and Instagram Reels'
-      ),
+      text: '写一句生日祝福',
+      query: '写一句生日祝福',
     },
   ];
 
@@ -475,26 +459,26 @@ export const Base = () => {
     if (!show) return null;
 
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="max-w-3xl px-4 mx-auto text-center">
-          <h2 className="mb-2 text-2xl font-semibold text-gray-800">
-            {t('DeepSeek R1 on the Edge')}
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="max-w-3xl px-4 mx-auto text-center mt-32">
+          <style jsx>{`
+            .scrolling-gradient {
+              background: linear-gradient(270deg, #3b82f6, #a21caf, #ec4899, #3b82f6);
+              background-size: 600% 600%;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              animation: gradientScroll 6s ease infinite;
+            }
+            @keyframes gradientScroll {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+          `}</style>
+          <h2 className="mb-6 text-7xl font-extrabold scrolling-gradient">
+            先问AI
           </h2>
-          <p className="text-gray-600">
-            {t(
-              'EdgeOne AI is transforming user experience and operational efficiency by performing AI computations closer to end-users, ensuring ultra-low latency and consistently high performance.'
-            )}
-          </p>
-
-          <p className="mt-2 text-sm text-gray-500">
-            {t('Available for free on ')}{' '}
-            <button
-              onClick={onEdgeOneAIBtnClick}
-              className="mt-4 text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
-            >
-              EdgeOne Pages
-            </button>
-          </p>
+          <div className="mb-8 text-gray-400 text-2xl text-center">遇事困难，先问AI</div>
         </div>
       </div>
     );
@@ -693,9 +677,12 @@ export const Base = () => {
                   <button
                     key={button.text}
                     onClick={() => handleKeywordClick(button.query)}
-                    className="px-3 py-2 text-sm text-left text-gray-700 transition-colors duration-200 bg-white border border-gray-200 rounded-md hover:bg-gray-100 hover:text-gray-900"
+                    className="flex items-center px-3 py-2 text-sm text-left text-gray-400 transition-colors duration-200 bg-white border border-gray-200 rounded-md hover:text-black hover:bg-gray-100"
                   >
-                    {button.text}
+                    <span className="flex-1">{button.text}</span>
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
                   </button>
                 ))}
               </div>
@@ -707,13 +694,28 @@ export const Base = () => {
         <div className="px-4 bg-white">
           <form onSubmit={handleSubmit} className="max-w-3xl py-4 mx-auto">
             <div className="flex flex-col overflow-hidden border border-gray-200 rounded-xl">
+              <style jsx>{`
+                .blue-breath {
+                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+                  animation: blueBreath 2.5s infinite alternate;
+                  transition: box-shadow 0.3s;
+                }
+                @keyframes blueBreath {
+                  0% {
+                    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3);
+                  }
+                  100% {
+                    box-shadow: 0 0 16px 8px rgba(59, 130, 246, 0.7);
+                  }
+                }
+              `}</style>
               <textarea
                 ref={textareaRef}
                 value={userInput}
                 onChange={handleTextareaChange}
                 placeholder={t('Type a message...')}
                 disabled={isLoading}
-                className={`w-full bg-white text-gray-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none min-h-[52px] max-h-[200px] placeholder:text-gray-400 border-none ${
+                className={`w-full bg-white text-gray-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none min-h-[52px] max-h-[200px] placeholder:text-gray-400 border-none blue-breath ${
                   isLoading ? 'cursor-not-allowed opacity-50' : ''
                 }`}
                 onCompositionStart={(e) => {
