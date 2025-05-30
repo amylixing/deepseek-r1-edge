@@ -582,8 +582,10 @@ export const Base = () => {
     isClient && (
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
-        <header className="sticky top-0 z-50 flex items-center px-6 py-3 bg-white">
-          {/* 已按用户请求删除 h1、img、a 等元素 */}
+        <header className="sticky top-0 z-50 flex items-center justify-center px-6 py-3 bg-white/80 shadow-md rounded-b-2xl backdrop-blur-md">
+          <span className="text-xl font-bold text-blue-600">先问AI</span>
+          <span className="mx-2 text-gray-300">|</span>
+          <span className="text-base text-gray-700">遇事困难，先问AI</span>
         </header>
 
         <WelcomeMessage show={showKeywords} />
