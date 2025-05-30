@@ -4,6 +4,7 @@ const withPWA = pkg.default || pkg;
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
+  output: 'export',
   // 只写 Next.js 原生配置
 };
 
