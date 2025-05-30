@@ -2,7 +2,6 @@ import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withPWA({
-  output: 'export',
   pwa: {
     dest: 'public',
     register: true,
