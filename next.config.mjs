@@ -1,13 +1,15 @@
-import withPWA from 'next-pwa';
+import pkg from 'next-pwa';
+const withPWA = pkg.default || pkg;
 
-/** @type {import('next').NextConfig} */
-const nextConfig = withPWA({
-  pwa: {
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-    disable: process.env.NODE_ENV === 'development',
-  },
-});
+const isDev = process.env.NODE_ENV === 'development';
 
-export default nextConfig;
+const nextConfig = {
+  // 只写 Next.js 原生配置
+};
+
+export default withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: isDev,
+})(nextConfig);
