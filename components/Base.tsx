@@ -50,7 +50,9 @@ const ThinkDrawer = ({
   return (
     <div className="mb-2">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+        }}
         className="flex items-center w-full px-3 py-2 text-sm text-yellow-800 bg-yellow-50 rounded-t-lg hover:bg-yellow-100 transition-colors"
       >
         <svg className="w-4 h-4 mr-2 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -123,6 +125,15 @@ export const Base = () => {
     };
     return map[en] || en;
   };
+
+  // 针对AI回复内容中过于客套的开场白、结尾等进行正则替换，保持精炼
+  function refineAIContent(content: string) {
+    // 可根据实际AI回复内容调整正则
+    return content
+      .replace(/^[\s\S]*?(?:帮你生成一份购物清单|请告诉我你的具体需求|当然可以帮助你|我可以先提供一个通用的模板供你参考|如果需要更具体的清单，请告诉我你的需求)[：:!！,，]?/g, '')
+      .replace(/(如果需要更具体的清单，请告诉我你的需求[！!。\s]*)$/g, '')
+      .replace(/^\s+|\s+$/g, '');
+  }
 
   const KEYWORD_BUTTONS: KeywordButton[] = [
     {
@@ -464,23 +475,6 @@ export const Base = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="max-w-3xl px-4 mx-auto text-center mt-32">
-          <style jsx>{`
-            .scrolling-gradient {
-              background: linear-gradient(270deg, #3b82f6, #a21caf, #ec4899, #3b82f6);
-              background-size: 600% 600%;
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              animation: gradientScroll 6s ease infinite;
-            }
-            @keyframes gradientScroll {
-              0% { background-position: 0% 50%; }
-              50% { background-position: 100% 50%; }
-              100% { background-position: 0% 50%; }
-            }
-          `}</style>
-          <h2 className="mb-6 text-7xl font-extrabold scrolling-gradient">
-            先问AI
-          </h2>
           <div className="mb-8 text-gray-400 text-2xl text-center">遇事困难，先问AI</div>
         </div>
       </div>
@@ -589,14 +583,12 @@ export const Base = () => {
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
         <header className="sticky top-0 z-50 flex items-center px-1 py-3 bg-white/80 shadow-md backdrop-blur-md">
-          <div className="flex items-center justify-start w-full" style={{paddingLeft: '0px'}}>
+          <div className="flex items-center justify-center w-full" style={{paddingLeft: '0px'}}>
             {/* 品牌 icon，示例为简洁 AI 闪电图标 */}
             <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8L21 10h-8l1-8z" />
             </svg>
-            <span className="text-xl font-bold text-blue-600">先问AI</span>
-            <span className="mx-2 text-gray-300">|</span>
-            <span className="text-base text-gray-700">遇事困难，先问AI</span>
+            <span className="text-2xl font-bold text-blue-600">先问AI</span>
           </div>
         </header>
 
@@ -608,76 +600,66 @@ export const Base = () => {
           className="flex-1 px-4 py-4 overflow-y-auto md:px-6"
         >
           <div className="max-w-3xl mx-auto space-y-6">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex items-start ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                {/* AI回复时，若有思考过程，单独展示在气泡上方 */}
-                {message.role === 'assistant' && message.think && (
-                  <div className="w-full max-w-[100%] mb-1">
-                    <ThinkDrawer content={message.think} t={t} />
-                  </div>
-                )}
-                <div
-                  className={`relative max-w-[100%] px-4 py-3 rounded-md text-sm ${
-                    message.role === 'user'
-                      ? 'bg-gray-200 text-black'
-                      : 'bg-blue-50 text-gray-800 border-l-4 border-blue-200'
-                  }`}
-                >
-                  {/* AI回复内容 */}
-                  {message.role === 'user' && (
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+            {messages.map((message, index) => {
+              // 新逻辑：思考过程和AI回复内容始终上下展示（思考过程在上，回复内容在下），用户无需手动关闭
+              return (
+                <div key={index} className={`flex flex-col items-start w-full`}>
+                  {message.role === 'assistant' && message.think && (
+                    <div className="w-full max-w-[100%] mb-1">
+                      <ThinkDrawer content={message.think} t={t} />
+                    </div>
                   )}
-                  {message.role === 'assistant' && (
-                    <div
-                      className="prose max-w-none prose-p:leading-relaxed prose-pre:bg-blue-50 prose-pre:border prose-pre:border-blue-200 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-strong:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:no-underline prose-headings:text-gray-900 prose-ul:my-4 prose-li:my-0.5 text-xs"
-                    >
-                      {/* <GeneratedByAI /> */}
-                      {message.source && <Source sources={message.source} />}
-                      {message.role === 'assistant' &&
-                        index === messages.length - 1 &&
-                        isSearching &&
-                        !message.content &&
-                        !message.think && <SearchingIndicator />}
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          code({ node, className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(
-                              className || ''
-                            );
-                            return true ? (
-                              <pre className="p-4 overflow-auto bg-blue-50 rounded-lg">
+                  <div
+                    className={`relative max-w-[100%] px-4 py-3 rounded-md text-sm ${
+                      message.role === 'user'
+                        ? 'bg-gray-200 text-black'
+                        : 'bg-blue-50 text-gray-800 border-l-4 border-blue-200'
+                    }`}
+                  >
+                    {message.role === 'user' && (
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                    )}
+                    {message.role === 'assistant' && (
+                      <div
+                        className="prose max-w-none prose-p:leading-relaxed prose-pre:bg-blue-50 prose-pre:border prose-pre:border-blue-200 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-strong:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:no-underline prose-headings:text-gray-900 prose-ul:my-4 prose-li:my-0.5 text-xs"
+                      >
+                        {message.source && <Source sources={message.source} />}
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            code({ node, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(
+                                className || ''
+                              );
+                              return true ? (
+                                <pre className="p-4 overflow-auto bg-blue-50 rounded-lg">
+                                  <code className={className} {...props}>
+                                    {children}
+                                  </code>
+                                </pre>
+                              ) : (
                                 <code className={className} {...props}>
                                   {children}
                                 </code>
-                              </pre>
-                            ) : (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            );
-                          },
-                          a: ({ node, ...props }) => (
-                            <a
-                              {...props}
-                              target="_blank"
-                              className="text-blue-600 hover:text-blue-800 "
-                            />
-                          ),
-                        }}
-                      >
-                        {message.content}
-                      </ReactMarkdown>
-                    </div>
-                  )}
+                              );
+                            },
+                            a: ({ node, ...props }) => (
+                              <a
+                                {...props}
+                                target="_blank"
+                                className="text-blue-600 hover:text-blue-800 "
+                              />
+                            ),
+                          }}
+                        >
+                          {refineAIContent(message.content)}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
