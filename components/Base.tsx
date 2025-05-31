@@ -588,7 +588,7 @@ export const Base = () => {
     isClient && (
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
-        <header className="sticky top-0 z-50 flex items-center px-6 py-3 bg-white/80 shadow-md backdrop-blur-md">
+        <header className="sticky top-0 z-50 flex items-center px-1 py-3 bg-white/80 shadow-md backdrop-blur-md">
           <div className="flex items-center justify-start w-full" style={{paddingLeft: '0px'}}>
             {/* 品牌 icon，示例为简洁 AI 闪电图标 */}
             <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -615,6 +615,12 @@ export const Base = () => {
                   message.role === 'user' ? 'justify-end' : 'justify-start'
                 }`}
               >
+                {/* AI回复时，若有思考过程，单独展示在气泡上方 */}
+                {message.role === 'assistant' && message.think && (
+                  <div className="w-full max-w-[100%] mb-1">
+                    <ThinkDrawer content={message.think} t={t} />
+                  </div>
+                )}
                 <div
                   className={`relative max-w-[100%] px-4 py-3 rounded-md text-sm ${
                     message.role === 'user'
@@ -628,13 +634,10 @@ export const Base = () => {
                   )}
                   {message.role === 'assistant' && (
                     <div
-                      className="prose max-w-none prose-p:leading-relaxed prose-pre:bg-blue-50 prose-pre:border prose-pre:border-blue-200 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-strong:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:no-underline prose-headings:text-gray-900 prose-ul:my-4 prose-li:my-0.5"
+                      className="prose max-w-none prose-p:leading-relaxed prose-pre:bg-blue-50 prose-pre:border prose-pre:border-blue-200 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-strong:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:no-underline prose-headings:text-gray-900 prose-ul:my-4 prose-li:my-0.5 text-xs"
                     >
                       {/* <GeneratedByAI /> */}
                       {message.source && <Source sources={message.source} />}
-                      {message.think && (
-                        <ThinkDrawer content={message.think} t={t} />
-                      )}
                       {message.role === 'assistant' &&
                         index === messages.length - 1 &&
                         isSearching &&
@@ -673,45 +676,6 @@ export const Base = () => {
                     </div>
                   )}
                 </div>
-                {/* AI回复内容外部的操作区，仅AI回复且内容存在时显示 */}
-                {message.role === 'assistant' && message.content && (
-                  <div className="flex gap-2 mt-2 mb-4 ml-2 justify-end">
-                    <button
-                      title="复制"
-                      className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
-                      onClick={() => {
-                        navigator.clipboard.writeText(message.content);
-                      }}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                      </svg>
-                    </button>
-                    <button
-                      title="分享"
-                      className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
-                      onClick={async () => {
-                        if (navigator.share) {
-                          await navigator.share({
-                            title: 'AI回复',
-                            text: message.content,
-                            url: window.location.href,
-                          });
-                        } else {
-                          navigator.clipboard.writeText(message.content);
-                          alert('已复制内容，可手动粘贴分享');
-                        }
-                      }}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M4 12v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" />
-                        <polyline points="16 6 12 2 8 6" />
-                        <line x1="12" y1="2" x2="12" y2="15" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
               </div>
             ))}
           </div>
