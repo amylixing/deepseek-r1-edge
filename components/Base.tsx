@@ -589,13 +589,15 @@ export const Base = () => {
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
         <header className="sticky top-0 z-50 flex items-center px-6 py-3 bg-white/80 shadow-md backdrop-blur-md">
-          {/* 品牌 icon，示例为简洁 AI 闪电图标 */}
-          <svg className="w-7 h-7 mr-2 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8L21 10h-8l1-8z" />
-          </svg>
-          <span className="text-xl font-bold text-blue-600">先问AI</span>
-          <span className="mx-2 text-gray-300">|</span>
-          <span className="text-base text-gray-700">遇事困难，先问AI</span>
+          <div className="flex items-center justify-start w-full" style={{paddingLeft: '0px'}}>
+            {/* 品牌 icon，示例为简洁 AI 闪电图标 */}
+            <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8L21 10h-8l1-8z" />
+            </svg>
+            <span className="text-xl font-bold text-blue-600">先问AI</span>
+            <span className="mx-2 text-gray-300">|</span>
+            <span className="text-base text-gray-700">遇事困难，先问AI</span>
+          </div>
         </header>
 
         <WelcomeMessage show={showKeywords} />
@@ -620,50 +622,10 @@ export const Base = () => {
                       : 'bg-blue-50 text-gray-800 border-l-4 border-blue-200'
                   }`}
                 >
-                  {/* AI回复右上角操作区 */}
-                  {message.role === 'assistant' && message.content && (
-                    <div className="absolute top-2 right-2 flex gap-2 z-10">
-                      <button
-                        title="复制"
-                        className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
-                        onClick={() => {
-                          navigator.clipboard.writeText(message.content);
-                        }}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                        </svg>
-                      </button>
-                      <button
-                        title="分享"
-                        className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
-                        onClick={async () => {
-                          if (navigator.share) {
-                            await navigator.share({
-                              title: 'AI回复',
-                              text: message.content,
-                              url: window.location.href,
-                            });
-                          } else {
-                            navigator.clipboard.writeText(message.content);
-                            alert('已复制内容，可手动粘贴分享');
-                          }
-                        }}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path d="M4 12v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" />
-                          <polyline points="16 6 12 2 8 6" />
-                          <line x1="12" y1="2" x2="12" y2="15" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-
+                  {/* AI回复内容 */}
                   {message.role === 'user' && (
                     <p className="whitespace-pre-wrap">{message.content}</p>
                   )}
-
                   {message.role === 'assistant' && (
                     <div
                       className="prose max-w-none prose-p:leading-relaxed prose-pre:bg-blue-50 prose-pre:border prose-pre:border-blue-200 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-strong:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:no-underline prose-headings:text-gray-900 prose-ul:my-4 prose-li:my-0.5"
@@ -686,7 +648,7 @@ export const Base = () => {
                               className || ''
                             );
                             return true ? (
-                              <pre className="p-4 overflow-auto bg-white rounded-lg">
+                              <pre className="p-4 overflow-auto bg-blue-50 rounded-lg">
                                 <code className={className} {...props}>
                                   {children}
                                 </code>
@@ -708,10 +670,48 @@ export const Base = () => {
                       >
                         {message.content}
                       </ReactMarkdown>
-                      {/* {isLoading && <Loading />} */}
                     </div>
                   )}
                 </div>
+                {/* AI回复内容外部的操作区，仅AI回复且内容存在时显示 */}
+                {message.role === 'assistant' && message.content && (
+                  <div className="flex gap-2 mt-2 mb-4 ml-2 justify-end">
+                    <button
+                      title="复制"
+                      className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
+                      onClick={() => {
+                        navigator.clipboard.writeText(message.content);
+                      }}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    </button>
+                    <button
+                      title="分享"
+                      className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
+                      onClick={async () => {
+                        if (navigator.share) {
+                          await navigator.share({
+                            title: 'AI回复',
+                            text: message.content,
+                            url: window.location.href,
+                          });
+                        } else {
+                          navigator.clipboard.writeText(message.content);
+                          alert('已复制内容，可手动粘贴分享');
+                        }
+                      }}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path d="M4 12v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" />
+                        <polyline points="16 6 12 2 8 6" />
+                        <line x1="12" y1="2" x2="12" y2="15" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -765,7 +765,7 @@ export const Base = () => {
                 disabled={isLoading}
                 className={`w-full bg-white text-gray-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none min-h-[52px] max-h-[200px] placeholder:text-gray-400 border-none ${
                   isLoading ? 'cursor-not-allowed opacity-50' : ''
-                }`}
+                } sm:min-h-[52px] sm:max-h-[200px] sm:text-base min-h-[40px] max-h-[120px] text-sm`}
                 onCompositionStart={(e) => {
                   (e.target as HTMLTextAreaElement).dataset.composing = 'true';
                 }}
