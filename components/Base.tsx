@@ -51,8 +51,11 @@ const ThinkDrawer = ({
     <div className="mb-2">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center w-full px-3 py-2 text-sm text-gray-600 bg-white rounded-t-lg hover:bg-gray-100"
+        className="flex items-center w-full px-3 py-2 text-sm text-yellow-800 bg-yellow-50 rounded-t-lg hover:bg-yellow-100 transition-colors"
       >
+        <svg className="w-4 h-4 mr-2 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a7 7 0 0 0-4 12.9V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.1A7 7 0 0 0 12 2zm0 16v2m-2 0h4" />
+        </svg>
         <svg
           className={`w-4 h-4 mr-2 transition-transform ${
             isOpen ? 'transform rotate-90' : ''
@@ -69,7 +72,7 @@ const ThinkDrawer = ({
         {t('Thinking Process')}
       </button>
       {isOpen && (
-        <div className="p-3 text-sm text-gray-400 bg-white rounded-b-lg">
+        <div className="p-3 text-sm text-yellow-900 bg-yellow-50 rounded-b-lg border-l-4 border-yellow-300" style={{fontFamily:'inherit',lineHeight:'1.7'}}>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         </div>
       )}
@@ -541,8 +544,11 @@ export const Base = () => {
       <div className="mb-2">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-600 bg-white rounded-t-lg hover:bg-gray-100"
+          className="flex items-center w-full px-3 py-2 text-sm text-yellow-800 bg-yellow-50 rounded-t-lg hover:bg-yellow-100 transition-colors"
         >
+          <svg className="w-4 h-4 mr-2 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a7 7 0 0 0-4 12.9V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.1A7 7 0 0 0 12 2zm0 16v2m-2 0h4" />
+          </svg>
           <svg
             className={`w-4 h-4 mr-2 transition-transform ${
               isOpen ? 'transform rotate-90' : ''
@@ -559,7 +565,7 @@ export const Base = () => {
           {t('References')} ({sources.length})
         </button>
         {isOpen && (
-          <div className="p-3 space-y-2 text-sm bg-white rounded-b-lg">
+          <div className="p-3 space-y-2 text-sm bg-yellow-50 rounded-b-lg">
             {sources.map((source, index) => (
               <a
                 key={index}
@@ -582,7 +588,11 @@ export const Base = () => {
     isClient && (
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
-        <header className="sticky top-0 z-50 flex items-center justify-center px-6 py-3 bg-white/80 shadow-md rounded-b-2xl backdrop-blur-md">
+        <header className="sticky top-0 z-50 flex items-center px-6 py-3 bg-white/80 shadow-md backdrop-blur-md">
+          {/* 品牌 icon，示例为简洁 AI 闪电图标 */}
+          <svg className="w-7 h-7 mr-2 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8L21 10h-8l1-8z" />
+          </svg>
           <span className="text-xl font-bold text-blue-600">先问AI</span>
           <span className="mx-2 text-gray-300">|</span>
           <span className="text-base text-gray-700">遇事困难，先问AI</span>
@@ -604,23 +614,59 @@ export const Base = () => {
                 }`}
               >
                 <div
-                  className={`relative max-w-[100%] px-4 py-3 rounded-md ${
+                  className={`relative max-w-[100%] px-4 py-3 rounded-md text-sm ${
                     message.role === 'user'
                       ? 'bg-gray-200 text-black'
-                      : 'bg-white text-gray-800'
+                      : 'bg-blue-50 text-gray-800 border-l-4 border-blue-200'
                   }`}
                 >
+                  {/* AI回复右上角操作区 */}
+                  {message.role === 'assistant' && message.content && (
+                    <div className="absolute top-2 right-2 flex gap-2 z-10">
+                      <button
+                        title="复制"
+                        className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
+                        onClick={() => {
+                          navigator.clipboard.writeText(message.content);
+                        }}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg>
+                      </button>
+                      <button
+                        title="分享"
+                        className="p-1 rounded hover:bg-blue-100 text-blue-500 border border-transparent hover:border-blue-200 transition"
+                        onClick={async () => {
+                          if (navigator.share) {
+                            await navigator.share({
+                              title: 'AI回复',
+                              text: message.content,
+                              url: window.location.href,
+                            });
+                          } else {
+                            navigator.clipboard.writeText(message.content);
+                            alert('已复制内容，可手动粘贴分享');
+                          }
+                        }}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M4 12v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" />
+                          <polyline points="16 6 12 2 8 6" />
+                          <line x1="12" y1="2" x2="12" y2="15" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+
                   {message.role === 'user' && (
                     <p className="whitespace-pre-wrap">{message.content}</p>
                   )}
 
                   {message.role === 'assistant' && (
                     <div
-                      className="prose max-w-none prose-p:leading-relaxed prose-pre:bg-white prose-pre:border 
-                  prose-pre:border-gray-200 prose-code:text-blue-600 prose-code:bg-white prose-code:px-1 prose-code:py-0.5
-                  prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-strong:text-gray-900
-                  prose-a:text-blue-600 prose-a:no-underline hover:prose-a:no-underline prose-headings:text-gray-900
-                  prose-ul:my-4 prose-li:my-0.5"
+                      className="prose max-w-none prose-p:leading-relaxed prose-pre:bg-blue-50 prose-pre:border prose-pre:border-blue-200 prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-strong:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:no-underline prose-headings:text-gray-900 prose-ul:my-4 prose-li:my-0.5"
                     >
                       {/* <GeneratedByAI /> */}
                       {message.source && <Source sources={message.source} />}
@@ -674,7 +720,7 @@ export const Base = () => {
         {showKeywords && (
           <div className="px-4 bg-white animate-fade-in">
             <div className="max-w-3xl mx-auto mb-4">
-              <div className="grid grid-cols-1 gap-2 p-2 rounded-lg sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 p-2 rounded-lg sm:grid-cols-2 mt-20" style={{marginTop: '48px'}}>
                 {getDisplayButtons().map((button) => (
                   <button
                     key={button.text}
@@ -695,29 +741,29 @@ export const Base = () => {
         {/* Input section */}
         <div className="px-4 bg-white">
           <form onSubmit={handleSubmit} className="max-w-3xl py-4 mx-auto">
-            <div className="flex flex-col overflow-hidden border border-gray-200 rounded-xl">
-              <style jsx>{`
-                .blue-breath {
-                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
-                  animation: blueBreath 2.5s infinite alternate;
-                  transition: box-shadow 0.3s;
+            <style jsx>{`
+              .blue-breath {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+                animation: blueBreath 2.5s infinite alternate;
+                transition: box-shadow 0.3s;
+              }
+              @keyframes blueBreath {
+                0% {
+                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3);
                 }
-                @keyframes blueBreath {
-                  0% {
-                    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3);
-                  }
-                  100% {
-                    box-shadow: 0 0 16px 8px rgba(59, 130, 246, 0.7);
-                  }
+                100% {
+                  box-shadow: 0 0 16px 8px rgba(59, 130, 246, 0.7);
                 }
-              `}</style>
+              }
+            `}</style>
+            <div className="flex flex-col overflow-hidden border border-gray-200 rounded-xl blue-breath">
               <textarea
                 ref={textareaRef}
                 value={userInput}
                 onChange={handleTextareaChange}
                 placeholder={t('Type a message...')}
                 disabled={isLoading}
-                className={`w-full bg-white text-gray-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none min-h-[52px] max-h-[200px] placeholder:text-gray-400 border-none blue-breath ${
+                className={`w-full bg-white text-gray-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none min-h-[52px] max-h-[200px] placeholder:text-gray-400 border-none ${
                   isLoading ? 'cursor-not-allowed opacity-50' : ''
                 }`}
                 onCompositionStart={(e) => {
@@ -735,69 +781,73 @@ export const Base = () => {
                   }
                 }}
               />
-              <div className="flex items-center justify-end gap-2 px-4 py-2 bg-gray-50">
-                <button
-                  type="button"
-                  onClick={() => setUseNetwork(!useNetwork)}
-                  className={`flex items-center px-2 py-1.5 rounded-lg text-sm ${
-                    useNetwork
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
+              <div className="flex items-center justify-between gap-2 px-4 py-2 bg-gray-50">
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setUseNetwork(!useNetwork)}
+                    className={`flex items-center px-2 py-1.5 rounded-lg text-sm ${
+                      useNetwork
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
                   >
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                  </svg>
-                  {useNetwork ? t('Network: On') : t('Network: Off')}
-                </button>
-                <button
-                  type={isStreaming ? 'button' : 'submit'}
-                  onClick={isStreaming ? handleStopResponse : undefined}
-                  disabled={
-                    (isLoading && !isStreaming) ||
-                    (!userInput.trim() && !isStreaming)
-                  }
-                  className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 ${
-                    (isLoading && !isStreaming) ||
-                    (!userInput.trim() && !isStreaming)
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : isStreaming
-                      ? 'bg-red-500 text-white hover:bg-red-600 hover:shadow-md active:transform active:scale-95'
-                      : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md active:transform active:scale-95'
-                  }`}
-                >
-                  {isStreaming ? (
                     <svg
-                      className="w-4 h-4"
+                      className="w-4 h-4 mr-1"
                       fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 12h14m-4 4l4-4-4-4"
-                      />
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                     </svg>
-                  )}
-                </button>
+                    {useNetwork ? t('Network: On') : t('Network: Off')}
+                  </button>
+                </div>
+                <div>
+                  <button
+                    type={isStreaming ? 'button' : 'submit'}
+                    onClick={isStreaming ? handleStopResponse : undefined}
+                    disabled={
+                      (isLoading && !isStreaming) ||
+                      (!userInput.trim() && !isStreaming)
+                    }
+                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 ${
+                      (isLoading && !isStreaming) ||
+                      (!userInput.trim() && !isStreaming)
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : isStreaming
+                        ? 'bg-red-500 text-white hover:bg-red-600 hover:shadow-md active:transform active:scale-95'
+                        : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md active:transform active:scale-95'
+                    }`}
+                  >
+                    {isStreaming ? (
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 12h14m-4 4l4-4-4-4"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </form>
